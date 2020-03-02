@@ -1,0 +1,54 @@
+import json
+import codecs
+
+'''用load()方法解码文件会报错
+   原因：json文件中格式不正确，
+   文件中多了','，需要格式化去掉
+   用loads()方法也会报错
+   原因：loads只能读取单条数据
+'''
+# 自定义格式化函数
+def format_json(str1):
+    information_succeed = '格式化成功!'
+    information_defeat = '格式化失败!'
+    try:
+        with open(str1, 'r', encoding='UTF-8') as f:
+            # 读取json文件
+            json_lines = f.read()
+            # 将文件中的},替换为}
+            replace_lines = json_lines.replace("},", "}")
+
+        with open(str1, 'w', encoding='UTF-8') as w:
+            # 将修改过的内容写入
+            w.write(replace_lines)
+        # 输出格式成功
+        print(information_succeed+'\n')
+    except:
+        # 输出格式化失败
+        print(information_defeat+'\n')
+
+
+# 写入title到文件中
+def write_title(str1, str2):
+    # 以这样方式打开的文件，中文不会乱码
+    writ_title = codecs.open(str1, 'a', encoding='UTF-8')
+    #写入到文件中  并换行处理 这样可读性高
+    writ_title.write(json.dumps(str2, ensure_ascii=False)+'\n')
+    writ_title.close()
+
+
+# json文件地址
+url1 = 'E:\\Python\\pyton文档\\cnki_data_战斗机.json'
+# title保存的txt文件地址
+url2 = 'E:\\Python\\pyton文档\\title文本'
+# 调用格式化函数
+format_json(url1)
+with open(url1, 'r', encoding='UTF-8') as f:
+    # 遍历读出每行数据
+    for line in f.readlines():
+        # 读出的数据类型为字典
+        json_string = json.loads(line)
+        # 调用写入函数，将提取的title写入txt文件
+        write_title(url2, json_string['title'])
+        # 输出这条字典中的title的键值
+        print('title: ',json_string['title'])
